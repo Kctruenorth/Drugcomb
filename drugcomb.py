@@ -26,21 +26,21 @@ print("   Loading Gene Expression...")
 gex_df = pd.read_csv("filtered_gex_matrix.csv")
 
 # ===========================
-# 2. MERGE OMICS (MUT + CNV + METH + GEX)
+# 2. MERGE OMICS 
 # ===========================
 print("2. Preparing Genetic Data...")
 
-# A. Standardize Cell Names
+# Standardize Cell Names
 for df in [mutation_df, cnv_df, meth_df, gex_df]:
     df["cell_line_name"] = df["cell_line_name"].str.upper().str.strip()
 
-# B. Merge Mutation + CNV (Base)
+# Merge Mutation + CNV
 genetics_df = pd.merge(mutation_df, cnv_df, on="cell_line_name", how="outer").fillna(0)
 
-# C. Merge Methylation (Left Join)
+# Merge Methylation (Left Join)
 genetics_df = pd.merge(genetics_df, meth_df, on="cell_line_name", how="left")
 
-# D. Merge GEX (Left Join)
+# Merge GEX (Left Join)
 genetics_df = pd.merge(genetics_df, gex_df, on="cell_line_name", how="left")
 
 # E. Handle Missing Data (Imputation)
@@ -89,7 +89,7 @@ def add_interactions(df):
 train_clean = add_interactions(train_clean)
 leaderboard_merged = add_interactions(leaderboard_merged)
 
-# 1. Create the label based on your threshold (>= 20)
+# 1. Create the label based on threshold (>= 20)
 synergy_counts = train_clean["SYNERGY_SCORE"].apply(lambda x: "Synergy" if x >= 20 else "No Synergy").value_counts()
 
 '''
@@ -115,7 +115,7 @@ plt.ylabel("Frequency")
 plt.show()
 '''
 # ===========================
-# 5. FEATURE SELECTION (SMART "FORCE-KEEP")
+# 5. FEATURE SELECTION 
 # ===========================
 print("4. Feature Selection...")
 
@@ -126,7 +126,7 @@ available_genetic_features = [c for c in genetic_features if c in train_clean.co
 print(f"   Clinical Features (Kept): {len(clinical_features)}")
 print(f"   Genetic Features (To Filter): {len(available_genetic_features)}")
 
-# 2. Variance Threshold (Applied ONLY to Genetics)
+# 2. Variance Threshold (Applied to Genetics)
 print("   Filtering low-variance genes...")
 X_genetics = train_clean[available_genetic_features]
 selector_var = VarianceThreshold(threshold=0.05) 
@@ -137,18 +137,18 @@ kept_indices_var = selector_var.get_support(indices=True)
 genes_after_var = [available_genetic_features[i] for i in kept_indices_var]
 print(f"   Genes after Variance Filter: {len(genes_after_var)}")
 
-# 3. SelectKBest (Applied ONLY to Genetics)
+# 3. SelectKBest (Applied to Genetics)
 print("   Selecting Top 3,000 Genes based on correlation...")
 y = train_clean[target]
 selector_kbest = SelectKBest(score_func=f_regression, k=3000)
 X_genetics_final = selector_kbest.fit_transform(X_genetics_reduced, y)
 
-# Recover names of the "Best" Genes
+# Recover names of best performing Genes
 kept_indices_kbest = selector_kbest.get_support(indices=True)
 best_genes = [genes_after_var[i] for i in kept_indices_kbest]
 print(f"   Final Selected Genes: {len(best_genes)}")
 
-# 4. Combine Clinical + Best Genes
+# 4. Combine Clinical and Best Genes
 final_features = clinical_features + best_genes
 
 # 5. Prepare Final Training Data
