@@ -3,14 +3,12 @@ import numpy as np
 
 def process_gex_data(file_path, output_path='filtered_gex_matrix.csv'):
     print("1. Loading Gene Expression Data...")
-    # Load data. assuming index_col=0 is the gene names
+    # Load data
     df = pd.read_csv(file_path, index_col=0)
     
     print(f"   Initial shape: {df.shape}")
 
     # 2. Check orientation
-    # If the dataframe has more rows than columns (e.g. 17k rows, 83 cols),
-    # it is likely Genes x Cells. We need Cells x Genes.
     if df.shape[0] > df.shape[1]:
         print("   Transposing matrix (flipping Genes x Cells -> Cells x Genes)...")
         df = df.T
