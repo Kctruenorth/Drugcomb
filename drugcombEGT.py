@@ -145,7 +145,7 @@ def optimize_schedule(c1, c2, synergy_score, current_params):
     }
 
 # ============================================================
-# 6. MAIN LOOP (Now uses DataFrame rows)
+# 6. MAIN LOOP 
 # ============================================================
 
 results = []
@@ -155,7 +155,7 @@ print("Running optimization on filtered pairs...")
 for _, row in df_synergy.iterrows():
     
     # 1. Extract Sensitive Params from CSV
-    # We convert Einf (0-100) to a g_min growth rate. 
+    # Cnvert Einf (0-100) to a g_min growth rate. 
     # If Einf=100 (viability), growth is g_max. If Einf=0, growth is 0.
     g_min_A = G_MAX_DEFAULT * (row['Einf_A'] / 100.0)
     g_min_B = G_MAX_DEFAULT * (row['Einf_B'] / 100.0)
@@ -210,7 +210,7 @@ df_results = df_results.sort_values(by='synergy_score', ascending=False)
 # Take top 10
 df_top10 = df_results.head(10)
 
-# Print nicely
+# Print 
 for _, row in df_top10.iterrows():
     print("\n--- Drug Pair ---")
     for k, v in row.items():
