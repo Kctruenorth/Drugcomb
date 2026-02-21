@@ -10,26 +10,26 @@ SYNERGY_THRESHOLD = 20
 
 df_synergy = pd.read_csv(CSV_PATH)
 
-# Keep only strong synergies (>= 20)
+# Keep only  synergies (>= 20)
 df_synergy = df_synergy[df_synergy["PREDICTED_SYNERGY"] >= SYNERGY_THRESHOLD]
 
 print(f"Loaded {len(df_synergy)} synergistic drug pairs (synergy >= {SYNERGY_THRESHOLD})")
 
 # ============================================================
-# 0. GLOBAL SETTINGS
+# GLOBAL SETTINGS
 # ============================================================
 
-# How strongly synergy penalizes growth when both drugs are used
+# Synergy scale
 SYNERGY_SCALE = 0.005
 
-# Initial population sizes
+# Initial population sizes (Assumed)
 S0 = 9.99e5        # sensitive cells
 R0 = 9.99e3          # resistant cells (1%)
 
 # Fraction of time grid for scheduling
 X_GRID = np.linspace(0, 1, 101)
 
-# Base max growth rate (Assumed global for the cell line if not in CSV)
+# Base max growth rate 
 G_MAX_DEFAULT = 0.05 
 
 # ============================================================
